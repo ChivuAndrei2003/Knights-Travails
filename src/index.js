@@ -1,93 +1,60 @@
-let chessBoard = [
-  [7, 0],
-  [7, 1],
-  [7, 2],
-  [7, 3],
-  [7, 4],
-  [7, 5],
-  [7, 6],
-  [7, 7],
-  [7, 8],
-  [6, 0],
-  [6, 1],
-  [6, 2],
-  [6, 3],
-  [6, 4],
-  [6, 5],
-  [6, 6],
-  [6, 7],
-  [6, 8],
-  [5, 0],
-  [5, 1],
-  [5, 2],
-  [5, 3],
-  [5, 4],
-  [5, 5],
-  [5, 6],
-  [5, 7],
-  [5, 8],
-  [4, 0],
-  [4, 1],
-  [4, 2],
-  [4, 3],
-  [4, 4],
-  [4, 5],
-  [4, 6],
-  [4, 7],
-  [4, 8][(3, 0)],
-  [3, 1],
-  [3, 2],
-  [3, 3],
-  [3, 4],
-  [3, 5],
-  [3, 6],
-  [3, 7],
-  [3, 8],
-  [2, 0],
-  [2, 1],
-  [2, 2],
-  [2, 3],
-  [2, 4],
-  [2, 5],
-  [2, 6],
-  [2, 7],
-  [2, 8],
-  [1, 0],
-  [1, 1],
-  [1, 2],
-  [1, 3],
-  [1, 4],
-  [1, 5],
-  [1, 6],
-  [1, 7],
-  [1, 8],
-  [0, 0],
-  [0, 1],
-  [0, 2],
-  [0, 3],
-  [0, 4],
-  [0, 5],
-  [0, 6],
-  [0, 7],
-  [0, 8],
-];
-
-function knightMoves(x = [], y = []) {
-  let knight = [(x = 0), (y = 0)];
-  let possibleMoves =
-    knight[(x + 2, y + 1)] ||
-    knight[(x + 1, y + 2)] ||
-    knight[(x - 2, y + 1)] ||
-    knight[(x - 1, y + 2)] ||
-    knight[(x + 2, y - 1)] ||
-    knight[(x + 1, y - 2)] ||
-    knight[(x - 2, y - 1)] ||
-    knight[(x - 1, y - 2)];
+function Node(pos, path) {
     
-//
+    if (pos[0] < 0 || pos[0] > 7 || pos[1] < 0 || pos[1] > 7) {
+        return null;
+    }
+    return { pos, path };
 }
 
-knightMoves();
+function knightMoves([x, y], [a, b]) {
+    let q = [Node([x, y], [[x, y]])];
+    
+    let visited = new Set();
 
-//trebuie sa folosesc djikstra
-let knightAllowedSquares = [];
+    visited.add(`${x},${y}`);
+
+    let currentNode = q.shift();
+
+    while (currentNode.pos[0] !== a || currentNode.pos[1] !== b) {
+        let moves = [
+      [currentNode.pos[0] + 2, currentNode.pos[1] - 1], // 
+      [currentNode.pos[0] + 2, currentNode.pos[1] + 1], // 
+      [currentNode.pos[0] - 2, currentNode.pos[1] - 1], // 
+      [currentNode.pos[0] - 2, currentNode.pos[1] + 1], // 
+      [currentNode.pos[0] + 1, currentNode.pos[1] - 2], // 
+      [currentNode.pos[0] + 1, currentNode.pos[1] + 2], // 
+      [currentNode.pos[0] - 1, currentNode.pos[1] - 2], // 
+      [currentNode.pos[0] - 1, currentNode.pos[1] + 2], // 
+        ];
+        
+        moves.forEach((move) => {
+            let positionKey = `${move[0]},${move[1]}`;
+
+            if (!visited.has(positionKey)) {
+                let node = Node(move, currentNode.path.concat([move]));
+
+                if (node) {
+                    
+                    visited.add(positionKey);
+
+                    q.push(node);
+                }
+            }
+        });
+
+        currentNode = q.shift();
+    }
+    console.log(
+        `=> You made it in ${currentNode.path.length - 1} moves!  Here's your path:`);
+    currentNode.path.forEach((pos) => {
+        console.log(pos);
+    });
+
+    return {
+        moves: currentNode.path.length - 1,
+        path: currentNode.path
+    };
+}
+
+console.log("Test 1: from [3,3] to [4,3]");
+knightMoves([3, 3], [4, 3]);
